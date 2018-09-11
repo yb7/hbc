@@ -102,21 +102,25 @@ contract('HbCoinCrowdsale', function ([_, investor, wallet, purchaser, tokenWall
     });
   });
 
-  // describe('high-level purchase', function () {
-  //   it('should log purchase', async function () {
-  //     const { logs } = await this.crowdsale.sendTransaction({ value: value, from: investor });
-  //     const event = logs.find(e => e.event === 'TokensPurchased');
-  //     should.exist(event);
-  //     event.args.purchaser.should.equal(investor);
-  //     event.args.beneficiary.should.equal(investor);
-  //     event.args.value.should.be.bignumber.equal(value);
-  //     event.args.amount.should.be.bignumber.equal(expectedTokenAmount);
-  //   });
+  describe('high-level purchase', function () {
+    it('should log purchase', async function () {
+      await increaseTimeTo(this.openingTime);
+      const { logs } = await this.crowdsale.sendTransaction({ value: value, from: investor });
+      const event = logs.find(e => e.event === 'TokensPurchased');
+      should.exist(event);
+      event.args.purchaser.should.equal(investor);
+      event.args.beneficiary.should.equal(investor);
+      event.args.value.should.be.bignumber.equal(value);
+      event.args.amount.should.be.bignumber.equal(expectedTokenAmount);
+    });
 
-  //   it('should assign tokens to sender', async function () {
-  //     await this.crowdsale.sendTransaction({ value: value, from: investor });
-  //     (await this.token.balanceOf(investor)).should.be.bignumber.equal(expectedTokenAmount);
-  //   });
+    it('should assign tokens to sender', async function () {
+      await increaseTimeTo(this.openingTime);
+      await this.crowdsale.sendTransaction({ value: value, from: investor });
+      (await this.crowdsale.balanceOf(investor)).should.be.bignumber.equal(expectedTokenAmount);
+      // do finish
+      (await this.token.balanceOf(investor)).should.be.bignumber.equal(expectedTokenAmount);
+    });
 
   //   it('should forward funds to wallet', async function () {
   //     const pre = await ethGetBalance(wallet);
@@ -139,5 +143,5 @@ contract('HbCoinCrowdsale', function ([_, investor, wallet, purchaser, tokenWall
   //     this.token = await HbCoin.new("HbCoin", "HBC", 18, tokenCap, { from: tokenWallet });
   //     await assertRevert(HbCoinCrowdsale.new(this.openingTime, this.closingTime, rate, wallet, this.token.address, ZERO_ADDRESS, this.vestCliffDuration, this.vestDuration));
   //   });
-  // });
+  });
 });
