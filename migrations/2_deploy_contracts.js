@@ -1,6 +1,6 @@
 
-const HbCoinCrowdsale = artifacts.require('./HbCoinCrowdsale.sol');
-const HbCoin = artifacts.require('./HbCoin.sol');
+const HbCoinCrowdsale = artifacts.require('HbCoinCrowdsale.sol');
+const HbCoin = artifacts.require('HbCoin.sol');
 
 function ether (n) {
   return new web3.BigNumber(web3.toWei(n, 'ether'));
@@ -25,15 +25,18 @@ module.exports = function(deployer, network, accounts) {
               ether(100000),
             );
         })
-        .then(() => {
-            return deployer.deploy(
-                HbCoinCrowdsale,
-                rate,
-                wallet,
-                HbCoin.address,
-                allowanceTokenWallet,
-                vestCliffDuration,
-                vestDuration,
-            );
+        // .then(() => {
+        //     return deployer.deploy(
+        //         HbCoinCrowdsale,
+        //         rate,
+        //         wallet,
+        //         HbCoin.address,
+        //         allowanceTokenWallet,
+        //         vestCliffDuration,
+        //         vestDuration,
+        //     );
+        // })
+        .catch((err) => {
+          console.log(err);
         });
 };

@@ -8,6 +8,7 @@ import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/drafts/TokenVesting.sol";
 
 contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
+
     using SafeMath for uint256;
 
     address[] private _balanceAccounts;
@@ -18,6 +19,8 @@ contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
     uint private _vestDuration;
 
     constructor(
+        uint256 openingTime,
+        uint256 closingTime,
         uint256 _rate,
         address _wallet,
         IERC20 _token,
@@ -25,8 +28,9 @@ contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
         uint vestCliffDuration,
         uint vestDuration
     )
-    AllowanceCrowdsale(tokenWallet)
     Crowdsale(_rate, _wallet, _token)
+    AllowanceCrowdsale(tokenWallet)
+    TimedCrowdsale(openingTime, closingTime)
     public
     {
         _vestCliffDuration = vestCliffDuration;
@@ -53,6 +57,7 @@ contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
     function vestingContract(address beneficiary) public view returns(TokenVesting) {
         return _tokenVestings[beneficiary];
     }
+
 
     /**
      * @dev Overrides parent by storing balances instead of issuing tokens right away.
