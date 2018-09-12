@@ -7,7 +7,7 @@ import "openzeppelin-solidity/contracts/crowdsale/distribution/FinalizableCrowds
 import "openzeppelin-solidity/contracts/math/SafeMath.sol";
 import "openzeppelin-solidity/contracts/drafts/TokenVesting.sol";
 
-contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
+contract HbCoinCrowdsale is FinalizableCrowdsale, AllowanceCrowdsale {
 
     using SafeMath for uint256;
 
@@ -36,6 +36,18 @@ contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
         _vestCliffDuration = vestCliffDuration;
         _vestDuration = vestDuration;
     }
+
+    /**
+      * Event for token purchase logging
+      * @param vestingAccount token vesting account
+      * @param beneficiary who got the tokens
+      * @param amount amount of tokens purchased
+      */
+    event TransferToTokenVesting(
+        address indexed vestingAccount,
+        address indexed beneficiary,
+        uint256 amount
+    );
 
     /**
     * @return the balance of an account.
@@ -79,6 +91,7 @@ contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
     function _finalization() internal {
         super._finalization();
         // solium-disable-next-line security/no-block-members
+        // emit TransferToTokenVesting(address(0), address(0), 12);
         _finishAt = block.timestamp;
         for (uint i = 0; i < _balanceAccounts.length; i++) {
             address beneficiary = _balanceAccounts[i];
@@ -87,6 +100,7 @@ contract HbCoinCrowdsale is AllowanceCrowdsale, FinalizableCrowdsale {
                 beneficiary, _finishAt, _vestCliffDuration, _vestDuration, false
             );
             _deliverTokens(vesting, amount);
+            emit TransferToTokenVesting(vesting, beneficiary, amount);
             _tokenVestings[beneficiary] = vesting;
         }
     }
